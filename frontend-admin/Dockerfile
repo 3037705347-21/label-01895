@@ -5,7 +5,7 @@ WORKDIR /app
 
 # 安装依赖
 COPY package.json package-lock.json* ./
-RUN npm install --frozen-lockfile 2>/dev/null || npm install
+RUN npm ci
 
 # 复制源码并构建
 COPY . .
