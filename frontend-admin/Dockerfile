@@ -3,9 +3,9 @@ FROM --platform=$BUILDPLATFORM node:20-alpine AS builder
 
 WORKDIR /app
 
-# 安装依赖
+# 安装依赖（包括开发依赖用于构建）
 COPY package.json package-lock.json* ./
-RUN npm install --frozen-lockfile 2>/dev/null || npm install
+RUN npm install
 
 # 复制源码并构建
 COPY . .

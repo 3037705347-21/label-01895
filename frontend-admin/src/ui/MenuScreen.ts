@@ -2,6 +2,7 @@ import { GameMode, AIDifficulty } from '../config/constants';
 
 export interface MenuCallbacks {
   onStartGame: (mode: GameMode, difficulty: AIDifficulty) => void;
+  onOpenStats: () => void;
 }
 
 /**
@@ -65,9 +66,14 @@ export class MenuScreen {
         </div>
       </div>
 
-      <button class="btn btn-primary btn-large" id="start-btn">
-        ⚔️ 开始战斗
-      </button>
+      <div class="menu-actions">
+        <button class="btn btn-primary btn-large" id="start-btn">
+          ⚔️ 开始战斗
+        </button>
+        <button class="btn btn-outline btn-large" id="stats-btn">
+          📊 战绩中心
+        </button>
+      </div>
 
       <div class="menu-card menu-card-wide">
         <div class="menu-card-title">操作说明</div>
@@ -125,6 +131,12 @@ export class MenuScreen {
         startBtn.classList.remove('loading');
         this.callbacks.onStartGame(this.selectedMode, this.selectedDifficulty);
       }, 300);
+    });
+
+    // 战绩中心按钮
+    const statsBtn = this.element.querySelector('#stats-btn')!;
+    statsBtn.addEventListener('click', () => {
+      this.callbacks.onOpenStats();
     });
   }
 

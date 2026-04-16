@@ -1,9 +1,10 @@
-import { AIDifficulty } from './constants';
+import { AIDifficulty, MatchRecord } from './constants';
 
 export interface GameStats {
   totalWins: number;
   totalDamage: number;
   lastDifficulty: AIDifficulty;
+  matchHistory: MatchRecord[];
 }
 
 const STORAGE_KEY = 'stickman_fighter_stats';
@@ -12,6 +13,7 @@ const DEFAULT_STATS: GameStats = {
   totalWins: 0,
   totalDamage: 0,
   lastDifficulty: 'normal',
+  matchHistory: [],
 };
 
 export class LocalStorageManager {
@@ -57,5 +59,19 @@ export class LocalStorageManager {
     } catch (e) {
       console.error('Failed to reset localStorage:', e);
     }
+  }
+
+  static addMatchRecord(record: Omit<MatchRecord, 'id'>): void {
+    const stats = this.getStats();
+    const newRecord: MatchRecord = {
+      ...record,
+      id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+    };
+    const matchHistory = [newRecord, ...stats.matchHistory].slice(0, 1000); // 最多保存1000条记录
+    this.saveStats({ matchHistory });
+  }
+
+  static getMatchHistory(): MatchRecord[] {
+    return this.getStats().matchHistory || [];
   }
 }
