@@ -78,6 +78,18 @@ export type AIDifficulty = 'easy' | 'normal' | 'hard';
 /** 游戏模式 */
 export type GameMode = 'pvp' | 'pve';
 
+export interface MatchRecord {
+  id: string;
+  mode: GameMode;
+  difficulty: AIDifficulty;
+  winner: 1 | 2 | null;
+  p1Damage: number;
+  p2Damage: number;
+  maxCombo: number;
+  timestamp: number;
+  duration: number;
+}
+
 /** 游戏状态 */
 export type GameState = 'menu' | 'fighting' | 'roundEnd' | 'gameOver';
 

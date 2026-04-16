@@ -15,6 +15,7 @@ export interface PlayerState {
   lastAttackTime: number;
   lastSpecialTime: number;
   comboCount: number;
+  maxCombo: number;
   lastComboTime: number;
   totalDamageDealt: number;
   wins: number;
@@ -50,6 +51,7 @@ export class Player {
       lastAttackTime: 0,
       lastSpecialTime: 0,
       comboCount: 0,
+      maxCombo: 0,
       lastComboTime: 0,
       totalDamageDealt: 0,
       wins: 0,
@@ -65,6 +67,7 @@ export class Player {
     this.state.isGrounded = true;
     this.state.isBlocking = false;
     this.state.comboCount = 0;
+    this.state.maxCombo = 0;
     this.state.lastComboTime = 0;
     this.state.lastAttackTime = 0;
     this.state.lastSpecialTime = 0;
