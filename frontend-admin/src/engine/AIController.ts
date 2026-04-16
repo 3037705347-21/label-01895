@@ -88,6 +88,10 @@ export class AIController {
     this.personality = this.generatePersonality();
   }
 
+  getDifficulty(): AIDifficulty {
+    return this.difficulty;
+  }
+
   /** 重置学习记忆（新游戏时调用） */
   resetMemory(): void {
     this.memory = this.createMemory();

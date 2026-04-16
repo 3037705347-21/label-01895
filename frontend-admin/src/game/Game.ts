@@ -27,6 +27,10 @@ import { LocalStorageManager } from '../config/storage';
 /**
  * 游戏主控制器 - 管理游戏生命周期
  */
+export interface GameCallbacks {
+  onOpenStats?: () => void;
+}
+
 export class Game {
   // 系统
   private sceneManager: SceneManager;
@@ -41,6 +45,9 @@ export class Game {
   private resultScreen: ResultScreen;
   private toast: ToastManager;
   private fpsMonitor: FPSMonitor;
+
+  // 回调
+  private callbacks: GameCallbacks;
 
   // 玩家
   private player1!: Player;
@@ -65,11 +72,16 @@ export class Game {
   private p1LastAction: string = 'idle';
   private p2LastAction: string = 'idle';
 
+  // 战绩统计
+  private maxCombo = 0;
+
   // 帧率自适应
   private lastQualityCheckTime = 0;
   private currentQualityLevel: QualityLevel = 'high';
 
-  constructor(container: HTMLElement) {
+  constructor(container: HTMLElement, callbacks: GameCallbacks = {}) {
+    this.callbacks = callbacks;
+
     // 初始化系统
     this.sceneManager = new SceneManager(container);
     this.inputManager = new InputManager();
@@ -83,6 +95,7 @@ export class Game {
     this.hud = new HUD();
     this.menuScreen = new MenuScreen({
       onStartGame: (mode, difficulty) => this.startGame(mode, difficulty),
+      onOpenStats: () => this.callbacks.onOpenStats?.(),
     });
     this.resultScreen = new ResultScreen({
       onRestart: () => this.restartGame(),
@@ -141,6 +154,7 @@ export class Game {
     this.player2.state.wins = 0;
     this.player1.state.totalDamageDealt = 0;
     this.player2.state.totalDamageDealt = 0;
+    this.maxCombo = 0;
 
     if (mode === 'pve') {
       LocalStorageManager.setLastDifficulty(difficulty);
@@ -250,6 +264,11 @@ export class Game {
       this.hud.showCombo(attacker.state.comboCount, name);
     }
 
+    // 更新最长连击
+    if (attacker.state.comboCount > this.maxCombo) {
+      this.maxCombo = attacker.state.comboCount;
+    }
+
     // 必杀技提示
     if (type === 'special') {
       this.toast.show(`${name} 必杀! -${Math.round(actualDamage)}`, 'info');
@@ -325,6 +344,17 @@ export class Game {
         LocalStorageManager.addWin();
       }
       LocalStorageManager.addDamage(this.player1.state.totalDamageDealt);
+
+      // 保存比赛记录到战绩中心
+      LocalStorageManager.saveMatchRecord({
+        mode: this.gameMode,
+        difficulty: this.aiController.getDifficulty(),
+        winner,
+        p1Damage: this.player1.state.totalDamageDealt,
+        p2Damage: this.player2.state.totalDamageDealt,
+        maxCombo: this.maxCombo,
+        rounds: this.currentRound,
+      });
 
       const stats = LocalStorageManager.getStats();
 
