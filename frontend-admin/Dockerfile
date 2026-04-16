@@ -1,14 +1,18 @@
 # ===== Build Stage =====
-FROM --platform=$BUILDPLATFORM node:20-alpine AS builder
+FROM node:20 AS builder
 
 WORKDIR /app
 
-# 安装依赖
-COPY package.json package-lock.json* ./
-RUN npm install --frozen-lockfile 2>/dev/null || npm install
+# 复制 package 文件
+COPY package.json package-lock.json ./
 
-# 复制源码并构建
+# 安装依赖
+RUN npm ci
+
+# 复制所有源码
 COPY . .
+
+# 构建
 RUN npm run build
 
 # ===== Production Stage =====

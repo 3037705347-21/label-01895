@@ -2,6 +2,7 @@ import './styles/global.css';
 import './styles/hud.css';
 import './styles/menu.css';
 import { Game } from './game/Game';
+import { StatsCenter } from './ui/StatsCenter';
 
 /**
  * 应用入口 — 包含全局错误处理
@@ -70,7 +71,15 @@ function bootstrap(): void {
   }
 
   try {
-    new Game(app);
+    // 初始化战绩中心
+    const statsCenter = new StatsCenter({
+      onClose: () => statsCenter.hide(),
+    });
+
+    // 初始化游戏
+    new Game(app, {
+      onOpenStats: () => statsCenter.show(),
+    });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error('[启动失败]', err);
