@@ -1,0 +1,309 @@
+/* ===== HUD Overlay ===== */
+.hud-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.hud-overlay * {
+  pointer-events: auto;
+}
+
+/* ===== Health Bar Area ===== */
+.health-bar-container {
+  position: absolute;
+  top: var(--space-md);
+  left: var(--space-lg);
+  right: var(--space-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.player-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.player-info.right {
+  align-items: flex-end;
+}
+
+.player-name {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.player-name.p1 { color: var(--color-player1); }
+.player-name.p2 { color: var(--color-player2); }
+
+.health-bar-wrapper {
+  width: 100%;
+  height: 24px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-border);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  position: relative;
+}
+
+.health-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width var(--transition-normal);
+  position: relative;
+}
+
+.health-bar-fill.p1 {
+  background: linear-gradient(90deg, var(--color-player1), #ff6b6b);
+  box-shadow: var(--shadow-glow-red);
+}
+
+.health-bar-fill.p2 {
+  background: linear-gradient(90deg, #6bb5ff, var(--color-player2));
+  box-shadow: var(--shadow-glow-blue);
+  float: right;
+}
+
+.health-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.2), transparent);
+  border-radius: var(--radius-full);
+}
+
+.health-text {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+  z-index: 1;
+}
+
+.health-text.p1 { left: var(--space-sm); }
+.health-text.p2 { right: var(--space-sm); }
+
+.round-indicator {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  min-width: 80px;
+}
+
+.round-text {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.timer-text {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-accent);
+  text-shadow: 0 0 10px rgba(244, 162, 97, 0.5);
+}
+
+/* ===== Combo Display ===== */
+.combo-display {
+  position: absolute;
+  top: 80px;
+  width: 100%;
+  text-align: center;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-accent);
+  text-shadow: 0 0 15px rgba(244, 162, 97, 0.6);
+  opacity: 0;
+  transform: scale(0.5);
+  transition: all var(--transition-fast);
+}
+
+.combo-display.active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ===== Controls Hint ===== */
+.controls-hint {
+  position: absolute;
+  bottom: var(--space-lg);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: var(--space-2xl);
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.control-group-title {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.control-keys {
+  display: flex;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.key-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 var(--space-sm);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ===== HUD 响应式 ===== */
+@media (max-width: 1024px) {
+  .health-bar-container {
+    top: var(--space-sm);
+    left: var(--space-md);
+    right: var(--space-md);
+    gap: var(--space-sm);
+  }
+  .health-bar-wrapper {
+    height: 20px;
+  }
+  .round-indicator {
+    min-width: 64px;
+  }
+  .timer-text {
+    font-size: var(--font-size-xl);
+  }
+  .combo-display {
+    top: 64px;
+    font-size: var(--font-size-lg);
+  }
+  .controls-hint {
+    bottom: var(--space-md);
+    padding: var(--space-xs) var(--space-md);
+    gap: var(--space-lg);
+  }
+  .key-badge {
+    min-width: 24px;
+    height: 24px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 768px) {
+  .health-bar-container {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-xs);
+    top: var(--space-xs);
+    left: var(--space-sm);
+    right: var(--space-sm);
+  }
+  .player-info {
+    max-width: 45%;
+  }
+  .health-bar-wrapper {
+    height: 18px;
+  }
+  .player-name {
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+  .round-indicator {
+    order: -1;
+    width: 100%;
+    min-width: unset;
+    flex-direction: row;
+    justify-content: center;
+    gap: var(--space-md);
+  }
+  .timer-text {
+    font-size: var(--font-size-lg);
+  }
+  .combo-display {
+    top: 56px;
+    font-size: var(--font-size-md);
+  }
+  .controls-hint {
+    flex-wrap: wrap;
+    justify-content: center;
+    bottom: var(--space-sm);
+    padding: var(--space-xs) var(--space-sm);
+    gap: var(--space-md);
+  }
+  .control-group-title {
+    font-size: 10px;
+  }
+  .key-badge {
+    min-width: 22px;
+    height: 22px;
+    padding: 0 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .health-bar-container {
+    top: env(safe-area-inset-top, var(--space-xs));
+  }
+  .health-bar-wrapper {
+    height: 14px;
+  }
+  .health-text {
+    font-size: 10px;
+  }
+  .round-text {
+    font-size: 10px;
+  }
+  .timer-text {
+    font-size: var(--font-size-md);
+  }
+  .combo-display {
+    top: 48px;
+    font-size: var(--font-size-sm);
+  }
+  .controls-hint {
+    gap: var(--space-sm);
+    bottom: max(var(--space-sm), env(safe-area-inset-bottom));
+  }
+  .control-group {
+    gap: 2px;
+  }
+}
