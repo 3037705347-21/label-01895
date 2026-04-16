@@ -1,6 +1,7 @@
 import './styles/global.css';
 import './styles/hud.css';
 import './styles/menu.css';
+import './styles/stats-center.css';
 import { Game } from './game/Game';
 
 /**

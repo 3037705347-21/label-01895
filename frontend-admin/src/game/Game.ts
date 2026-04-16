@@ -9,6 +9,7 @@ import { StickmanGenerator, StickmanDNA } from '../engine/StickmanGenerator';
 import { HUD } from '../ui/HUD';
 import { MenuScreen } from '../ui/MenuScreen';
 import { ResultScreen } from '../ui/ResultScreen';
+import { StatsCenter } from '../ui/StatsCenter';
 import { ToastManager } from '../ui/ToastManager';
 import { FPSMonitor } from '../ui/FPSMonitor';
 import {
@@ -39,6 +40,7 @@ export class Game {
   private hud: HUD;
   private menuScreen: MenuScreen;
   private resultScreen: ResultScreen;
+  private statsCenter: StatsCenter;
   private toast: ToastManager;
   private fpsMonitor: FPSMonitor;
 
@@ -64,6 +66,8 @@ export class Game {
   private p2AttackHit = false;
   private p1LastAction: string = 'idle';
   private p2LastAction: string = 'idle';
+  private p1MaxCombo = 0;
+  private p2MaxCombo = 0;
 
   // 帧率自适应
   private lastQualityCheckTime = 0;
@@ -83,10 +87,14 @@ export class Game {
     this.hud = new HUD();
     this.menuScreen = new MenuScreen({
       onStartGame: (mode, difficulty) => this.startGame(mode, difficulty),
+      onShowStats: () => this.showStatsCenter(),
     });
     this.resultScreen = new ResultScreen({
       onRestart: () => this.restartGame(),
       onMenu: () => this.returnToMenu(),
+    });
+    this.statsCenter = new StatsCenter({
+      onClose: () => this.hideStatsCenter(),
     });
 
     // 碰撞回调
@@ -141,6 +149,8 @@ export class Game {
     this.player2.state.wins = 0;
     this.player1.state.totalDamageDealt = 0;
     this.player2.state.totalDamageDealt = 0;
+    this.p1MaxCombo = 0;
+    this.p2MaxCombo = 0;
 
     if (mode === 'pve') {
       LocalStorageManager.setLastDifficulty(difficulty);
@@ -228,6 +238,16 @@ export class Game {
     this.combatSystem.clearEffects();
   }
 
+  private showStatsCenter(): void {
+    this.menuScreen.hide();
+    this.statsCenter.show();
+  }
+
+  private hideStatsCenter(): void {
+    this.statsCenter.hide();
+    this.menuScreen.show();
+  }
+
   private onAttackHit(attacker: Player, defender: Player, _damage: number, type: AttackType): void {
     // 防止同一次攻击多次判定
     if (attacker.id === 1) {
@@ -248,6 +268,14 @@ export class Game {
     const name = attacker.id === 1 ? 'P1' : 'P2';
     if (attacker.state.comboCount >= 2) {
       this.hud.showCombo(attacker.state.comboCount, name);
+    }
+
+    // 更新最大连击记录
+    if (attacker.id === 1 && attacker.state.comboCount > this.p1MaxCombo) {
+      this.p1MaxCombo = attacker.state.comboCount;
+    }
+    if (attacker.id === 2 && attacker.state.comboCount > this.p2MaxCombo) {
+      this.p2MaxCombo = attacker.state.comboCount;
     }
 
     // 必杀技提示
@@ -325,6 +353,19 @@ export class Game {
         LocalStorageManager.addWin();
       }
       LocalStorageManager.addDamage(this.player1.state.totalDamageDealt);
+
+      // 记录详细游戏历史
+      LocalStorageManager.addHistoryRecord({
+        mode: this.gameMode,
+        difficulty: this.aiController.getDifficulty(),
+        winner,
+        p1Damage: this.player1.state.totalDamageDealt,
+        p2Damage: this.player2.state.totalDamageDealt,
+        p1Wins,
+        p2Wins,
+        maxCombo: Math.max(this.p1MaxCombo, this.p2MaxCombo),
+        rounds: this.currentRound,
+      });
 
       const stats = LocalStorageManager.getStats();
 
